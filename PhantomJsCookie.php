@@ -40,7 +40,7 @@ class PhantomJsCookie extends Cookie implements iCookie
         250 => '\xfa', 251 => '\xfb', 252 => '\xfc', 253 => '\xfd', 254 => '\xfe', 255 => '\xff',];
 
     public function getFileName(){
-        return parent::getFileName() . '-phantomjs';
+        return parent::getFileName() . '-phantomjs.' . $this->ext;
     }
 
     /**
@@ -113,7 +113,7 @@ class PhantomJsCookie extends Cookie implements iCookie
     public function toFile($cookies){
         $keyCountCookie = is_array($cookies) ? count($cookies) : 0;
         $start = "[General]
-cookies=\"@Variant(\\0\\0\\0\\x7f\\0\\0\\0\\x16QList<QNetworkCookie>\\0\\0\\0\\0\\x1" . $this->getPhantomCookieCountSymbol($keyCountCookie);
+cookies=\"@Variant(\\0\\0\\0\\x7f\\0\\0\\0\\x16QList<QNetworkCookie>\\0\\0\\0\\0\\x1" . $this->getCountSymbol($keyCountCookie);
         $end = ")\"
 ";
         $str = '';
@@ -136,7 +136,7 @@ cookies=\"@Variant(\\0\\0\\0\\x7f\\0\\0\\0\\x16QList<QNetworkCookie>\\0\\0\\0\\0
         $phantomJS = new PhantomJS(PHANTOMJS_EXE);
         $cookieName = 'zzz_generatorCountCookieNumber';
         $phantomJS->setKeyStream($cookieName);
-        $this->setName($cookieName);
+        $this->open($cookieName);
         $regEx = self::$regExDelimiter;
         $regexCookieLine = "%^cookies=\"?\@Variant\(({$regEx}{4}){2}QList\\<QNetworkCookie\\>\\\\0({$regEx}{4}){2}(?<cookie_str>.*)\)\"?\s*$%ms";
         $minSizeLenCookie = 64;

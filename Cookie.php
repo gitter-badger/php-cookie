@@ -8,6 +8,7 @@
 namespace bpteam\Cookie;
 
 use bpteam\BigList\JsonList;
+use bpteam\DryText\DryPath;
 
 class Cookie extends JsonList implements iCookie
 {
@@ -35,7 +36,7 @@ class Cookie extends JsonList implements iCookie
         $cookie['expires']  = $expires ? $expires : date('D, d-M-y H:i:s', time() + 86400 - date('Z')) . ' GMT';
         $cookie['httponly'] = (bool)$httpOnly;
         $cookie['secure']   = (bool)$secure;
-        $domain = cStringWork::getDomainName($domain);
+        $domain = DryPath::getDomainName($domain);
         $this->write($cookie, $name, $domain);
     }
 
@@ -56,7 +57,7 @@ class Cookie extends JsonList implements iCookie
 
     public function delete($name, $domain)
     {
-        $data =& $this->find($name, $this->find(cStringWork::getDomainName($domain)));
+        $data =& $this->find($name, $this->find(DryPath::getDomainName($domain)));
         $data = NULL;
     }
 
@@ -79,7 +80,7 @@ class Cookie extends JsonList implements iCookie
 
     public function get($domain)
     {
-        return $this->find(cStringWork::getDomainName($domain));
+        return $this->find(DryPath::getDomainName($domain));
     }
 
     public function getActive($domain)

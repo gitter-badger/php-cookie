@@ -16,12 +16,17 @@
   "require": {
     "php": ">=5.5",
     "bpteam/file": "master",
-    "bpteam/list": "master"
+    "bpteam/list": "master",
+    "bpteam/dry-text": "master"
   },
   "repositories":[
     {
       "type": "vcs",
       "url": "https://github.com/bpteam/file"
+    },
+    {
+      "type": "vcs",
+      "url": "https://github.com/bpteam/dry-text"
     },
     {
       "type": "vcs",

@@ -11,7 +11,7 @@ namespace bpteam\Cookie;
 class CurlCookie extends Cookie implements iCookie
 {
     public function getFileName(){
-        return parent::getFileName() . '-curl';
+        return parent::getFileName() . '-curl.' . $this->ext;
     }
 
     /**
