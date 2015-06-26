@@ -10,14 +10,14 @@ namespace bpteam\Cookie;
 use bpteam\BigList\JsonList;
 use bpteam\DryText\DryPath;
 
-class Cookie extends JsonList implements iCookie
+abstract class Cookie extends JsonList implements iCookie
 {
 
     protected $ext = 'cookie';
 
     function __construct($path = NULL)
     {
-        parent::__construct($path ?: (__DIR__ . '/data'));
+        parent::__construct($path ?: sys_get_temp_dir());
     }
 
     function __destruct()
@@ -103,46 +103,9 @@ class Cookie extends JsonList implements iCookie
         return $this->read();
     }
 
-    /**
-     * @param string $text
-     * @return array
-     */
-    public static function fromHttp($text){
-        $cookies = [];
-        if(preg_match_all('%Set-Cookie:\s*(?<name>\w+)\s*=\s*(?<value>[^;]+)(?<cookie>.*)%i', $text, $matches)){
-            foreach($matches['cookie'] as $cookieLine){
-                $cookie = self::parsCookieString($cookieLine);
-                if ($cookie) {
-                    $cookies[$cookie['name']] = $cookie;
-                }
-            }
-        }
-        return $cookies;
-    }
-
-    /**
-     * @param string $text
-     * @return array
-     */
-    public static function fromMetaTeg($text){
-        $cookies = [];
-        if(preg_match_all('%(?<cookie><meta[^>]*Set-Cookie[^>]*>)%i', $text, $matches)){
-            foreach($matches['cookie'] as $cookieLine){
-                if(!preg_match('%content\s*=\s*(\'|")(?<cookieLine>.*))%i', $cookieLine, $match)){
-                    continue;
-                }
-                $cookie = self::parsCookieString($match['cookieLine']);
-                if($cookie){
-                    $cookies[$cookie['name']] = $cookie;
-                }
-            }
-        }
-        return $cookies;
-    }
-
     public static function parsCookieString($text){
         $parameters = ['expires', 'domain', 'path'];
-        if(preg_match('%(?<name>\w+)\s*=\s*(?<value>[^;]+)%ims', $text, $match)){
+        if(preg_match('%^\s*(?<name>\w+)\s*=\s*(?<value>[^;]+)%ims', $text, $match)){
             $cookie['name'] = trim($match['name']);
             $cookie['value'] = trim($match['value']);
         } else {
