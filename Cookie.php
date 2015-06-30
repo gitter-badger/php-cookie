@@ -55,9 +55,9 @@ abstract class Cookie extends JsonList implements iCookie
         }
     }
 
-    public function delete($name, $domain)
+    public function delete($name)
     {
-        $data =& $this->find($name, $this->find(DryPath::getDomainName($domain)));
+        $data =& $this->find($name);
         $data = NULL;
     }
 
