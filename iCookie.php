@@ -21,7 +21,7 @@ interface iCookie
      * @param bool        $tailMatch full match on domain name
      */
     public function add($name, $value, $domain, $path = '/', $expires = false, $httpOnly = false, $secure = false, $tailMatch = true);
-    public function delete($name, $domain);
+    public function delete($name);
     public function get($domain);
     public function open($name);
     public function close();
