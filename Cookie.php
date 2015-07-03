@@ -13,11 +13,11 @@ use bpteam\DryText\DryPath;
 abstract class Cookie extends JsonList implements iCookie
 {
 
-    protected $ext = 'cookie';
+    protected $ext = '.cookie';
 
     function __construct($path = NULL)
     {
-        parent::__construct($path ?: sys_get_temp_dir());
+        parent::__construct($path);
     }
 
     function __destruct()
@@ -37,6 +37,9 @@ abstract class Cookie extends JsonList implements iCookie
         $cookie['httponly'] = (bool)$httpOnly;
         $cookie['secure']   = (bool)$secure;
         $domain = DryPath::getDomainName($domain);
+        if (!$this->find($domain)) {
+            $this->write([], $domain);
+        }
         $this->write($cookie, $name, $domain);
     }
 
@@ -103,7 +106,8 @@ abstract class Cookie extends JsonList implements iCookie
         return $this->read();
     }
 
-    public static function parsCookieString($text){
+    public static function parsCookieString($text)
+    {
         $parameters = ['expires', 'domain', 'path'];
         if(preg_match('%^\s*(?<name>\w+)\s*=\s*(?<value>[^;]+)%ims', $text, $match)){
             $cookie['name'] = trim($match['name']);
@@ -118,6 +122,17 @@ abstract class Cookie extends JsonList implements iCookie
         }
         $cookie['secure'] = (bool)preg_match('%;\s*secure\s*(;|$)%i', $text);
         $cookie['httponly'] = (bool)preg_match('%;\s*httponly\s*(;|$)%i', $text);
+
         return $cookie;
+    }
+
+    public function getFileFormName()
+    {
+        return parent::getFileName() . $this->ext;
+    }
+
+    public function getFileName()
+    {
+        return parent::getFileName();
     }
 }

@@ -10,37 +10,47 @@ namespace bpteam\Cookie;
 
 class CurlCookie extends Cookie implements iCookie
 {
-    public function getFileName(){
-        return parent::getFileName() . '-curl.' . $this->ext;
+    protected $ext = '_curl.cookie';
+
+    function __construct($path = null)
+    {
+        parent::__construct($path);
+    }
+
+    function __destruct()
+    {
+        parent::__destruct();
     }
 
     /**
      * @param string $text
      * @return array
      */
-    public static function from($text){
+    public static function from($text)
+    {
         $lines = explode("\n", $text);
         $count = count($lines);
         $cookies = [];
-        for($i = 4 ; $i < $count ; $i++){
+        for ($i = 4; $i < $count; $i++) {
             $fields = array_map('trim', explode("\t", $lines[$i]));
-            if(is_array($fields) && isset($fields[5])){
-                $cookie['name']     = $fields[5];
-                $cookie['value']    = $fields[6];
-                $cookie['tailmatch']= $fields[1] == 'TRUE';
-                $cookie['domain']   = preg_replace('%^\#HttpOnly_%ims', '', $fields[0]);
-                $cookie['path']     = $fields[2];
-                $cookie['expires']  = date('D, d-M-y H:i:s', $fields[4] - date('Z')) . " GMT";
+            if (is_array($fields) && isset($fields[5])) {
+                $cookie['name'] = $fields[5];
+                $cookie['value'] = $fields[6];
+                $cookie['tailmatch'] = $fields[1] == 'TRUE';
+                $cookie['domain'] = preg_replace('%^\#HttpOnly_%ims', '', $fields[0]);
+                $cookie['path'] = $fields[2];
+                $cookie['expires'] = date('D, d-M-y H:i:s', $fields[4] - date('Z')) . " GMT";
                 $cookie['httponly'] = (bool)preg_match('%^\#HttpOnly_%ims', $lines[$i]);
-                $cookie['secure']   = $fields[3] == 'TRUE';
+                $cookie['secure'] = $fields[3] == 'TRUE';
                 $cookies[$cookie['name']] = $cookie;
             }
         }
         return $cookies;
     }
 
-    public function fromFile($fileName = false){
-        $text = file_get_contents($fileName ? $fileName : $this->getFileName());
+    public function fromFile($fileName = false)
+    {
+        $text = file_get_contents($fileName ? $fileName : $this->getFileFormName());
         return self::from($text);
     }
 
@@ -48,8 +58,9 @@ class CurlCookie extends Cookie implements iCookie
      * @param $cookie
      * @return string
      */
-    public static function to($cookie){
-        return ($cookie['httponly']?'#HttpOnly_':'') .
+    public static function to($cookie)
+    {
+        return ($cookie['httponly'] ? '#HttpOnly_' : '') .
         $cookie['domain'] . "\t" .
         (@$cookie['tailmatch'] ? 'TRUE' : 'FALSE') . "\t" .
         $cookie['path'] . "\t" .
@@ -59,13 +70,14 @@ class CurlCookie extends Cookie implements iCookie
         $cookie['value'];
     }
 
-    public function toFile($cookies){
+    public function toFile($cookies)
+    {
         $str = "\n\n\n\n";
         $cookiesLines = [];
-        foreach($cookies as $cookie){
+        foreach ($cookies as $cookie) {
             $cookiesLines[] = $this->to($cookie);
         }
-        $str .= implode("\n",$cookiesLines);
-        return file_put_contents($this->getFileName(), $str);
+        $str .= implode("\n", $cookiesLines);
+        return file_put_contents($this->getFileFormName(), $str);
     }
 }

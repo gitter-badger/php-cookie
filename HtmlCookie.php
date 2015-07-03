@@ -10,6 +10,19 @@ namespace bpteam\Cookie;
 
 class HtmlCookie extends Cookie implements iCookie
 {
+
+    protected $ext = '_html.cookie';
+
+    function __construct($path = null)
+    {
+        parent::__construct($path);
+    }
+
+    function __destruct()
+    {
+        parent::__destruct();
+    }
+
     /**
      * @param string $text
      * @return array
@@ -17,13 +30,13 @@ class HtmlCookie extends Cookie implements iCookie
     public static function from($text)
     {
         $cookies = [];
-        if(preg_match_all('%(?<cookie><meta[^>]*Set-Cookie[^>]*>)%i', $text, $matches)){
-            foreach($matches['cookie'] as $cookieLine){
-                if(!preg_match('%content\s*=\s*(\'|")(?<cookieLine>.*))%i', $cookieLine, $match)){
+        if (preg_match_all('%(?<cookie><meta[^>]*Set-Cookie[^>]*>)%i', $text, $matches)) {
+            foreach ($matches['cookie'] as $cookieLine) {
+                if (!preg_match('%content\s*=\s*(\'|")(?<cookieLine>.*))%i', $cookieLine, $match)) {
                     continue;
                 }
                 $cookie = self::parsCookieString($match['cookieLine']);
-                if($cookie){
+                if ($cookie) {
                     $cookies[$cookie['name']] = $cookie;
                 }
             }
@@ -34,13 +47,25 @@ class HtmlCookie extends Cookie implements iCookie
     public static function to($cookie)
     {
         $cookieLine = [];
-        if (!$cookie['name'] || !$cookie['value']) return false;
+        if (!$cookie['name'] || !$cookie['value']) {
+            return false;
+        }
         $cookieLine[] = $cookie['name'] . '=' . $cookie['value'];
-        if ($cookie['domain']) $cookieLine[] = 'domain=' . $cookie['domain'];
-        if ($cookie['expires']) $cookieLine[] = 'expires=' . $cookie['expires'];
-        if ($cookie['path']) $cookieLine[] = 'path=' . $cookie['path'];
-        if ($cookie['secure']) $cookieLine[] = 'secure';
-        if ($cookie['httponly']) $cookieLine[] = 'httponly';
+        if ($cookie['domain']) {
+            $cookieLine[] = 'domain=' . $cookie['domain'];
+        }
+        if ($cookie['expires']) {
+            $cookieLine[] = 'expires=' . $cookie['expires'];
+        }
+        if ($cookie['path']) {
+            $cookieLine[] = 'path=' . $cookie['path'];
+        }
+        if ($cookie['secure']) {
+            $cookieLine[] = 'secure';
+        }
+        if ($cookie['httponly']) {
+            $cookieLine[] = 'httponly';
+        }
         return '<meta http-equiv="Set-Cookie" content="' . implode('; ', $cookieLine) . '" />';
     }
 

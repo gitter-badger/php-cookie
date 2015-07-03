@@ -10,7 +10,10 @@ namespace bpteam\Cookie;
 
 class PhantomJsCookie extends Cookie implements iCookie
 {
+    protected $ext = '_phantom.cookie';
+
     protected static $regExDelimiter = '(?:(?:\\\\n)?((\\\\0|\\\\{2}|((\\\\x[0-9a-f]{2}){2}|\\\\x[0-9a-f]{2})|\\\\x[0-9a-f]|\\\\_|\\\\[abtnvfr]|[g-zG-Z]|\W|\\\\\W)))';
+
     protected static $countSymbols = [
         0   => '\0',   1   => '\x1',  2   => '\x2',  3   => '\x3',  4   => '\x4',  5   => '\x5',  6   => '\x6',  7   => '\a',   8   => '\b',   9   => '\t',
         10  => '\n',   11  => '\v',   12  => '\f',   13  => '\r',   14  => '\xe',  15  => '\xf',  16  => '\x10', 17  => '\x11', 18  => '\x12', 19  => '\x13',
@@ -39,8 +42,14 @@ class PhantomJsCookie extends Cookie implements iCookie
         240 => '\xf0', 241 => '\xf1', 242 => '\xf2', 243 => '\xf3', 244 => '\xf4', 245 => '\xf5', 246 => '\xf6', 247 => '\xf7', 248 => '\xf8', 249 => '\xf9',
         250 => '\xfa', 251 => '\xfb', 252 => '\xfc', 253 => '\xfd', 254 => '\xfe', 255 => '\xff',];
 
-    public function getFileName(){
-        return parent::getFileName() . '-phantomjs.' . $this->ext;
+    function __construct($path = NULL)
+    {
+        parent::__construct($path);
+    }
+
+    function __destruct()
+    {
+        parent::__destruct();
     }
 
     /**
@@ -92,7 +101,7 @@ class PhantomJsCookie extends Cookie implements iCookie
     }
 
     public function fromFile($fileName = false){
-        $text = file_get_contents($fileName ? $fileName : $this->getFileName());
+        $text = file_get_contents($fileName ? $fileName : $this->getFileFormName());
         return self::from($text);
     }
 
@@ -122,7 +131,7 @@ cookies=\"@Variant(\\0\\0\\0\\x7f\\0\\0\\0\\x16QList<QNetworkCookie>\\0\\0\\0\\0
             $str .= $this->getCountSymbol(mb_strlen($cookieStr)) . $cookieStr;
         }
         $str = $start . $str . $end;
-        return file_put_contents($this->getFileName(), $str);
+        return file_put_contents($this->getFileFormName(), $str);
     }
 
     /**
@@ -146,7 +155,7 @@ cookies=\"@Variant(\\0\\0\\0\\x7f\\0\\0\\0\\x16QList<QNetworkCookie>\\0\\0\\0\\0
         echo "[";
         for($i = $startNumber ; $i <= $countRepeat ; $i++){
             $phantomJS->renderText($urlCheck . '?lengthCookie='.$i);
-            $text = file_get_contents($this->getFileName());
+            $text = file_get_contents($this->getFileFormName());
             preg_match($regexCookieLine, $text, $match);
             $symbol = $this->getSymbol($match['cookie_str']);
             if($symbol){

@@ -8,8 +8,21 @@
 namespace bpteam\Cookie;
 
 
-class HttpCookie extends Cookie  implements iCookie
+class HttpCookie extends Cookie implements iCookie
 {
+
+    protected $ext = '_http.cookie';
+
+    function __construct($path = null)
+    {
+        parent::__construct($path);
+    }
+
+    function __destruct()
+    {
+        parent::__destruct();
+    }
+
     /**
      * @param string $text
      * @return array
@@ -17,8 +30,8 @@ class HttpCookie extends Cookie  implements iCookie
     public static function from($text)
     {
         $cookies = [];
-        if(preg_match_all('%Set-Cookie:\s*(?<name>\w+)\s*=\s*(?<value>[^;]+)(?<cookie>.*)%i', $text, $matches)){
-            foreach($matches['cookie'] as $cookieLine){
+        if (preg_match_all('%Set-Cookie:\s*(?<name>\w+)\s*=\s*(?<value>[^;]+)(?<cookie>.*)%i', $text, $matches)) {
+            foreach ($matches['cookie'] as $cookieLine) {
                 $cookie = self::parsCookieString($cookieLine);
                 if ($cookie) {
                     $cookies[$cookie['name']] = $cookie;
